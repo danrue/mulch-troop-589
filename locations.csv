@@ -1,4 +1,4 @@
-﻿Order ID,Customer,Address 1,City,State,Zip,Item,Instructions,Sold By,Total Qty,Latitude,Longitude
+﻿Order ID,Customer,Address 1,City,State,Zip,Item,Instructions,Sold By,Qty,Latitude,Longitude
 4879,North Coop Restaurant & Bar,2401 Minnesota 7 Southwest,Excelsior,MN,55331, BROWN Mulch,Driveway,"Doe, Sean",5,44.8897279,-93.58159885
 4877,Vandy's Grille,7795 Laketown Pkwy,Waconia,MN,55387, BLACK Mulch,Driveway,"Smith, Colton ""Colt""",6,44.86315733,-93.75492607
 4873,Bode Gray's,125 W 1st St,Waconia,MN,55387, CYPRESS Mulch,Driveway,"Stone, Oliver",5,44.8492203,-93.7885042
