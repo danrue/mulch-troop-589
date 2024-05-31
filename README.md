@@ -22,7 +22,7 @@ Ensure you have the following packages installed:
 You can install the necessary packages using pip:
 
 ```bash
-pip install folium pandas numpy
+pip3 install folium pandas numpy
 ```
 
 ## Data
@@ -54,7 +54,7 @@ The script expects a CSV file named `locations.csv` with the following columns:
 2. Run the script:
 
 ```bash
-python createmapcluster.py
+python3 createmapcluster.py
 ```
 
 3. The script will generate an `map-cluster.html` file in the same directory. Open this file in a web browser to view the map.
