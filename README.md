@@ -3,7 +3,12 @@
 
 This project generates an interactive map to visualize location data with color-coded markers based on quantity ranges. The script uses the Folium library to create the map and pandas to handle data from a CSV file. The resulting map is saved as an HTML file.
 
-It was originally created to support the distribution and routes for mulch delivery for Troop 589. 
+It was originally created to support the distribution and routes for mulch delivery for Troop 589. The map will automatically cluster addresss, to help determine which orders can be sent together. 
+
+You can view the an example of the HTML page here:
+
+https://mulch-troop-589-confdisp-6b19e2acbbcc066ffbc2d43bdc88156fc7bcaa.gitlab.io/map-cluster.html
+
 
 ## Prerequisites
 
