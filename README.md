@@ -63,6 +63,8 @@ Latitude,Longitude,Qty,Order ID,Address 1,City,State,Zip
 44.9780,-93.2650,12,12345,123 Main St,Minneapolis,MN,55401
 ```
 
+The example `locations.csv` contains an example of what we download from Troop Webhost. 
+
 ## Notes
 
 - The color map is defined with specific ranges. Adjust the `color_map` dictionary if your data has different ranges.
