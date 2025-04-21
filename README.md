@@ -12,18 +12,9 @@ https://mulch-troop-589-confdisp-6b19e2acbbcc066ffbc2d43bdc88156fc7bcaa.gitlab.i
 
 ## Prerequisites
 
-Ensure you have the following packages installed:
+This project uses [uv](https://docs.astral.sh/uv/) to track dependencies.
 
-- `folium`
-- `pandas`
-- `numpy`
-- `webbrowser`
-
-You can install the necessary packages using pip:
-
-```bash
-pip3 install folium pandas numpy
-```
+Install uv and then run `uv sync` to set up this project.
 
 ## Data
 
@@ -54,7 +45,7 @@ The script expects a CSV file named `locations.csv` with the following columns:
 2. Run the script:
 
 ```bash
-python3 createmapcluster.py
+uv run createmapcluster.py
 ```
 
 3. The script will generate an `map-cluster.html` file in the same directory. Open this file in a web browser to view the map.
