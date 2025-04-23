@@ -3,9 +3,56 @@ import pandas as pd
 import webbrowser
 import numpy as np
 from folium.plugins import MarkerCluster
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
+import time
+import random
 
 # Read the data from the CSV file
 df = pd.read_csv('locations.csv')
+
+# Initialize geocoder with longer timeout
+geolocator = Nominatim(user_agent="my_map_app", timeout=10)
+
+# Function to get coordinates for an address with retries
+def get_coordinates(address, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            location = geolocator.geocode(address)
+            if location:
+                return location.latitude, location.longitude
+            return None
+        except (GeocoderTimedOut, GeocoderUnavailable) as e:
+            if attempt == max_retries - 1:  # Last attempt
+                return None
+            # Exponential backoff with jitter
+            wait_time = (2 ** attempt) + random.uniform(0, 1)
+            print(f"Geocoding attempt {attempt + 1} failed, waiting {wait_time:.2f} seconds...")
+            time.sleep(wait_time)
+    return None
+
+# Process each row and save progress
+print("Geocoding addresses...")
+for index, row in df.iterrows():
+    # Skip if coordinates already exist and are valid
+    if pd.notna(row.get('Latitude')) and pd.notna(row.get('Longitude')):
+        print(f"Skipping row {index} - coordinates already exist: {row['Latitude']}, {row['Longitude']}")
+        continue
+        
+    address = f"{row['Address 1']}, {row['City']}, {row['State']} {row['Zip']}"
+    coords = get_coordinates(address)
+    
+    if coords:
+        df.at[index, 'Latitude'] = coords[0]
+        df.at[index, 'Longitude'] = coords[1]
+        # Save progress after each successful geocoding
+        df.to_csv('locations.csv', index=False)
+        print(f"Successfully geocoded: {address}")
+    else:
+        print(f"Failed to geocode: {address}")
+
+# Remove rows where geocoding failed
+df = df.dropna(subset=['Latitude', 'Longitude'])
 
 # Define the color map based on quantity range
 color_map = {
@@ -52,25 +99,28 @@ marker_cluster = MarkerCluster()
 
 # Add markers to the map
 for index, row in df.iterrows():
-    qty = int(row['Qty'])
-    color = 'red'
-    for qty_range, c in color_map.items():
-        if qty in range(qty_range[0], qty_range[1]):
-            color = c
-            break
-    html_text = f'<div style="font-weight:bold; font-size:12pt; color:{color};text-align:center;line-height: .8em;">{row["Qty"]}<br/><span style="font-weight:normal; font-size:10pt">{row["Order ID"]}</span></div>'
-    folium.map.Marker(
-        [row['Latitude'], row['Longitude']],
-        icon=folium.features.DivIcon(
-            icon_size=(150, 36),
-            icon_anchor=(0, 0),
-            html=html_text
-        ),
-        popup=f"ORDER:{row['Order ID']} Address:{row['Address 1']}, {row['City']}, {row['State']}, {row['Zip']}<br>Quantity: {row['Qty']}",
-        color=color
-    ).add_to(marker_cluster)
+    try:
+        qty = int(row['Qty'])
+        color = 'red'
+        for qty_range, c in color_map.items():
+            if qty in range(qty_range[0], qty_range[1]):
+                color = c
+                break
+        html_text = f'<div style="font-weight:bold; font-size:12pt; color:{color};text-align:center;line-height: .8em;">{row["Qty"]}<br/><span style="font-weight:normal; font-size:10pt">{row["Order ID"]}</span></div>'
+        folium.map.Marker(
+            [row['Latitude'], row['Longitude']],
+            icon=folium.features.DivIcon(
+                icon_size=(150, 36),
+                icon_anchor=(0, 0),
+                html=html_text
+            ),
+            popup=f"ORDER:{row['Order ID']} Address:{row['Address 1']}, {row['City']}, {row['State']}, {row['Zip']}<br>Quantity: {row['Qty']}",
+            color=color
+        ).add_to(marker_cluster)
+    except (ValueError, TypeError):
+        print(f"Skipping row with invalid quantity: {row['Order ID']}")
 
-    # Add the marker cluster to the map
+# Add the marker cluster to the map
 marker_cluster.add_to(m)
 
 polygon = folium.Polygon(locations=boundary_coordinates, color='red', fill=False)

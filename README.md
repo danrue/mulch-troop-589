@@ -20,14 +20,17 @@ Install uv and then run `uv sync` to set up this project.
 
 The script expects a CSV file named `locations.csv` with the following columns:
 
-- `Latitude`
-- `Longitude`
 - `Qty`
 - `Order ID`
 - `Address 1`
 - `City`
 - `State`
 - `Zip`
+
+The script will add (if needed) and fill in the following columns when run:
+
+- `Latitude`
+- `Longitude`
 
 ## Script Overview
 
