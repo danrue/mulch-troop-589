@@ -7,9 +7,26 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
 import time
 import random
+import argparse
+import sys
+
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='Create a map from a CSV file of locations.')
+parser.add_argument('csv_file', help='Path to the CSV file containing location data')
+args = parser.parse_args()
 
 # Read the data from the CSV file
-df = pd.read_csv('locations.csv')
+try:
+    df = pd.read_csv(args.csv_file)
+except FileNotFoundError:
+    print(f"Error: CSV file '{args.csv_file}' not found.")
+    sys.exit(1)
+except pd.errors.EmptyDataError:
+    print(f"Error: CSV file '{args.csv_file}' is empty.")
+    sys.exit(1)
+except Exception as e:
+    print(f"Error reading CSV file: {e}")
+    sys.exit(1)
 
 # Initialize geocoder with longer timeout
 geolocator = Nominatim(user_agent="my_map_app", timeout=10)
@@ -46,7 +63,7 @@ for index, row in df.iterrows():
         df.at[index, 'Latitude'] = coords[0]
         df.at[index, 'Longitude'] = coords[1]
         # Save progress after each successful geocoding
-        df.to_csv('locations.csv', index=False)
+        df.to_csv(args.csv_file, index=False)
         print(f"Successfully geocoded: {address}")
     else:
         print(f"Failed to geocode: {address}")

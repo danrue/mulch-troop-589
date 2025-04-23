@@ -48,7 +48,7 @@ The script will add (if needed) and fill in the following columns when run:
 2. Run the script:
 
 ```bash
-uv run createmapcluster.py
+uv run createmapcluster.py locations.csv
 ```
 
 3. The script will generate an `map-cluster.html` file in the same directory. Open this file in a web browser to view the map.
