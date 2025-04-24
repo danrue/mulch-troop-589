@@ -9,11 +9,30 @@ import time
 import random
 import argparse
 import sys
+from shapely.geometry import Point, Polygon
 
 # Parse command line arguments
 parser = argparse.ArgumentParser(description='Create a map from a CSV file of locations.')
 parser.add_argument('csv_file', help='Path to the CSV file containing location data')
 args = parser.parse_args()
+
+# Define the boundary coordinates (2024)
+boundary_coordinates = np.array([
+    [44.98263383567378, -93.86964228719432],
+    [44.94144076009766, -93.5193844037396],
+    [44.90427410644277, -93.36382027566569],
+    [44.714011061743264, -93.52511069066254],
+    [44.72350521483905, -93.61959442489149],
+    [44.781114844825744, -93.78756550796514],
+    [44.87925755643328, -93.93263144334693]
+])
+
+# Create boundary polygon
+boundary_polygon = Polygon(boundary_coordinates)
+
+def is_within_boundary(lat, lon):
+    point = Point(lat, lon)  # Note: shapely uses (x,y) = (latitude,longitude)
+    return boundary_polygon.contains(point)
 
 # Read the data from the CSV file
 try:
@@ -71,6 +90,12 @@ for index, row in df.iterrows():
 # Remove rows where geocoding failed
 df = df.dropna(subset=['Latitude', 'Longitude'])
 
+# Check all coordinates against boundary
+print("\nChecking coordinates against boundary...")
+for index, row in df.iterrows():
+    if not is_within_boundary(row['Latitude'], row['Longitude']):
+        print(f"Warning: Coordinates ({row['Latitude']}, {row['Longitude']}) for address '{row['Address 1']}, {row['City']}, {row['State']} {row['Zip']}' are outside the boundary.")
+
 # Define the color map based on quantity range
 color_map = {
     (0, 5): '#003f5c',
@@ -82,27 +107,6 @@ color_map = {
     (50, 80): '#ff7c43',
     (80, 1000): '#ffa600'
 }
-# Define the boundary coordinates (2024)
-boundary_coordinates = np.array([
-    [44.98263383567378, -93.86964228719432],
-    [44.94144076009766, -93.5193844037396],
-    [44.90427410644277, -93.36382027566569],
-    [44.714011061743264, -93.52511069066254],
-    [44.72350521483905, -93.61959442489149],
-    [44.781114844825744, -93.78756550796514],
-    [44.87925755643328, -93.93263144334693]
-])
-# Define the boundary coordinates (2023)
-boundary_coordinates_2023 = np.array([
-    [44.977808186439034, -93.880324895305181],
-    [44.97426774667989, -93.81418943938966],
-    [44.935055413789065, -93.61328064898696],
-    [44.867952910205446, -93.41308683533549],
-    [44.788087678864514, -93.46921260053563],
-    [44.75255650009777, -93.57788924164835],
-    [44.75636445751769, -93.79988988015386]
-])
-
 
 # Create the map object
 m = folium.Map(location=[df['Latitude'].mean(), df['Longitude'].mean()], zoom_start=12, tiles="cartodb positron")
