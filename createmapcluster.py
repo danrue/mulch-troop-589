@@ -70,6 +70,11 @@ def get_coordinates(address, max_retries=3):
 # Process each row and save progress
 print("Geocoding addresses...")
 for index, row in df.iterrows():
+    # Skip rows where Item contains 'DONATION' (case-insensitive)
+    if pd.notna(row.get('Item')) and 'DONATION' in str(row['Item']).upper():
+        print(f"Skipping row {index} - contains 'DONATION' in Item: {row['Item']}")
+        continue
+        
     # Skip if coordinates already exist and are valid
     if pd.notna(row.get('Latitude')) and pd.notna(row.get('Longitude')):
         print(f"Skipping row {index} - coordinates already exist: {row['Latitude']}, {row['Longitude']}")
@@ -93,6 +98,9 @@ df = df.dropna(subset=['Latitude', 'Longitude'])
 # Check all coordinates against boundary
 print("\nChecking coordinates against boundary...")
 for index, row in df.iterrows():
+    # Skip rows where Item contains 'DONATION' (case-insensitive)
+    if pd.notna(row.get('Item')) and 'DONATION' in str(row['Item']).upper():
+        continue
     if not is_within_boundary(row['Latitude'], row['Longitude']):
         print(f"Warning: Coordinates ({row['Latitude']}, {row['Longitude']}) for address '{row['Address Line 1']}, {row['City']}, {row['State']} {row['Zip']}' are outside the boundary.")
 
@@ -111,15 +119,14 @@ color_map = {
 # Create the map object
 m = folium.Map(location=[df['Latitude'].mean(), df['Longitude'].mean()], zoom_start=12, tiles="cartodb positron")
 
-# 2023 boundary
-#polygon = folium.Polygon(locations=boundary_coordinates_2023, color='#ffe2e6', fill=False)
-#polygon.add_to(m)
-
 # Create the marker cluster object
 marker_cluster = MarkerCluster()
 
 # Add markers to the map
 for index, row in df.iterrows():
+    # Skip rows where Item contains 'DONATION' (case-insensitive)
+    if pd.notna(row.get('Item')) and 'DONATION' in str(row['Item']).upper():
+        continue
     try:
         qty = int(row['Order Qty'])
         color = 'red'
@@ -146,8 +153,6 @@ marker_cluster.add_to(m)
 
 polygon = folium.Polygon(locations=boundary_coordinates, color='red', fill=False)
 polygon.add_to(m)
-
-
 
 # Save the map as an HTML file
 m.save('map-cluster.html')
