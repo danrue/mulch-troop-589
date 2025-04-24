@@ -36,7 +36,7 @@ def is_within_boundary(lat, lon):
 
 # Read the data from the CSV file
 try:
-    df = pd.read_csv(args.csv_file)
+    df = pd.read_csv(args.csv_file, dtype={'Zip': str})
 except FileNotFoundError:
     print(f"Error: CSV file '{args.csv_file}' not found.")
     sys.exit(1)
@@ -75,7 +75,7 @@ for index, row in df.iterrows():
         print(f"Skipping row {index} - coordinates already exist: {row['Latitude']}, {row['Longitude']}")
         continue
         
-    address = f"{row['Address 1']}, {row['City']}, {row['State']} {row['Zip']}"
+    address = f"{row['Address Line 1']}, {row['City']}, {row['State']} {row['Zip']}"
     coords = get_coordinates(address)
     
     if coords:
@@ -94,7 +94,7 @@ df = df.dropna(subset=['Latitude', 'Longitude'])
 print("\nChecking coordinates against boundary...")
 for index, row in df.iterrows():
     if not is_within_boundary(row['Latitude'], row['Longitude']):
-        print(f"Warning: Coordinates ({row['Latitude']}, {row['Longitude']}) for address '{row['Address 1']}, {row['City']}, {row['State']} {row['Zip']}' are outside the boundary.")
+        print(f"Warning: Coordinates ({row['Latitude']}, {row['Longitude']}) for address '{row['Address Line 1']}, {row['City']}, {row['State']} {row['Zip']}' are outside the boundary.")
 
 # Define the color map based on quantity range
 color_map = {
@@ -121,13 +121,13 @@ marker_cluster = MarkerCluster()
 # Add markers to the map
 for index, row in df.iterrows():
     try:
-        qty = int(row['Qty'])
+        qty = int(row['Order Qty'])
         color = 'red'
         for qty_range, c in color_map.items():
             if qty in range(qty_range[0], qty_range[1]):
                 color = c
                 break
-        html_text = f'<div style="font-weight:bold; font-size:12pt; color:{color};text-align:center;line-height: .8em;">{row["Qty"]}<br/><span style="font-weight:normal; font-size:10pt">{row["Order ID"]}</span></div>'
+        html_text = f'<div style="font-weight:bold; font-size:12pt; color:{color};text-align:center;line-height: .8em;">{row["Order Qty"]}<br/><span style="font-weight:normal; font-size:10pt">{row["Order ID"]}</span></div>'
         folium.map.Marker(
             [row['Latitude'], row['Longitude']],
             icon=folium.features.DivIcon(
@@ -135,7 +135,7 @@ for index, row in df.iterrows():
                 icon_anchor=(0, 0),
                 html=html_text
             ),
-            popup=f"ORDER:{row['Order ID']} Address:{row['Address 1']}, {row['City']}, {row['State']}, {row['Zip']}<br>Quantity: {row['Qty']}",
+            popup=f"ORDER:{row['Order ID']} Address:{row['Address Line 1']}, {row['City']}, {row['State']}, {row['Zip']}<br>Quantity: {row['Order Qty']}",
             color=color
         ).add_to(marker_cluster)
     except (ValueError, TypeError):
