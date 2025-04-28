@@ -13,6 +13,7 @@ from shapely.geometry import Point, Polygon
 from typing import Tuple, Optional, Dict, List
 
 # Constants
+# Update these based on this year's delivery area
 BOUNDARY_COORDINATES = np.array([
     [44.98263383567378, -93.86964228719432],
     [44.94144076009766, -93.5193844037396],
