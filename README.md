@@ -11,9 +11,9 @@ It was originally created to support the distribution and routes for mulch
 delivery for Troop 589. The map will automatically cluster addresss, to help
 determine which orders can be sent together. 
 
-You can view the an example of the HTML page here:
-
-https://mulch-troop-589-confdisp-6b19e2acbbcc066ffbc2d43bdc88156fc7bcaa.gitlab.io/map-cluster.html
+You can view the an example of the HTML page by downloading
+[map-cluster.html](./map-cluster.html) to your computer and loading it in your
+web browser.
 
 
 ## Prerequisites
