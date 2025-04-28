@@ -88,6 +88,34 @@ The example `example.csv` contains a stripped down, anonymized example of what
 we download from TroopWebhost. The `map-cluster.html` is what is is produced
 when `createmapcluster.py` is run against `example.csv`.
 
+Running the example should look like this:
+
+```
+$ uv run createmapcluster.py example.csv
+Geocoding addresses...
+Successfully geocoded: 2401 MN-7, Shorewood, MN 55331
+Successfully geocoded: 7795 Laketown Pkwy, Waconia, MN 55387
+Successfully geocoded: 125 W 1st St, Waconia, MN 55387
+Successfully geocoded: 318 E Lake St, Waconia, MN 55387
+Successfully geocoded: 421 Ash Ave N, Mayer, MN 55360
+Successfully geocoded: 119 S Olive St, Waconia, MN 55387
+Successfully geocoded: 37 W 1st St, Waconia, MN 55387
+Skipping row 7 - contains 'DONATION' in Item: DONATION
+Successfully geocoded: 300 Lewis Ave S, Watertown, MN 55388
+Successfully geocoded: 141 Lewis Ave S, Watertown, MN 55388
+Successfully geocoded: 2 River Bend Pl, Chaska, MN 55318
+Successfully geocoded: 338 1st Ave E, Shakopee, MN 55379
+Successfully geocoded: 566 W 78th St, Chanhassen, MN 55317
+Successfully geocoded: 6202 Bloomington Rd, Fort Snelling, MN 55111
+
+Checking coordinates against boundary...
+Warning: Coordinates (44.8907784, -93.1933273) for address '6202 Bloomington Rd, Fort Snelling, MN 55111' are outside the boundary.
+```
+
+Some notables from the above output. Row 7 was a "DONATION" row so it was
+ignored. One address fell outside of the boundary and so a warning was printed
+(if you download the HTML file you can see it is still in the map).
+
 ## Notes
 
 - The color map is defined with specific ranges. Adjust the `color_map`
