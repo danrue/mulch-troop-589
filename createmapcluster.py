@@ -4,7 +4,7 @@ import webbrowser
 import numpy as np
 from folium.plugins import MarkerCluster
 from geopy.geocoders import Nominatim
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
+from geopy.exc import GeocoderTimedOut, GeocoderUnavailable, GeocoderRateLimited
 import time
 import random
 import argparse
@@ -86,7 +86,7 @@ def get_coordinates(
             if location:
                 return location.latitude, location.longitude
             return None
-        except (GeocoderTimedOut, GeocoderUnavailable) as e:
+        except (GeocoderTimedOut, GeocoderUnavailable, GeocoderRateLimited) as e:
             if attempt == max_retries - 1:
                 print(
                     f"Failed to geocode address after {max_retries} attempts: {address}"
@@ -125,6 +125,7 @@ def process_coordinates(
             continue
 
         address = f"{row['Address Line 1']}, {row['City']}, {row['State']} {row['Zip']}"
+        time.sleep(1)  # Nominatim requires max 1 request per second
         coords = get_coordinates(address, geolocator)
 
         if coords:
